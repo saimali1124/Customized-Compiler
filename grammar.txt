@@ -1,0 +1,314 @@
+GRAMMAR:
+
+//* global variables
+int line=1;
+int tabs = 0;
+int noOfParams =0;
+int variableNum =0;
+string IDname="";
+int addressLine =0;
+bool first = true;
+int Elseif_i = 0;
+int Else_i = 0;
+int address = 0;
+int initialValue = 0;
+bool constOnRHS = 1;
+string context = "global";
+string temp = "";
+string Z1 = "";
+string Z2 = "";
+string E1 = "";
+string E2 = "";
+bool assignment = false;
+bool ifCondition = false;
+string if_P1 = "";
+string if_P2 = "";
+
+
+Start -> CommentSection Starting
+
+
+Starting -> kaam Function kaam khatam Start
+Starting -> END_OF_FILE
+
+
+Function -> Funcname@Datatype (Parameters) karo Statements
+
+
+Datatype -> adad
+Datatype -> khali
+
+
+Parameters -> ID@adad Param
+Parameters -> ^
+
+
+Param -> | ID@adad Param
+Param -> ^
+
+
+Statements -> Statement Statements
+Statements -> ^
+
+
+Statement -> Declare;Comment 
+Statement -> Input;Comment 
+Statement -> Output;Comment 
+Statement -> Return;Comment 
+Statement -> Loop CommentSection
+Statement -> If CommentSection  
+
+
+Declare -> { constOnRHS = true;
+             initialValue = 0; }
+           rakho ID 
+           { IDname = ID.lex; }
+           DeclareType  
+
+
+DeclareType -> @adad AssignToExpression
+DeclareType -> := Assigned
+
+
+AssignToExpression -> := Assigned
+AssignToExpression -> ^
+
+
+Assigned -> { assignment = true; } 
+            Expression 
+            { printTAC(IDname, " = ", Z1, "\n"); 
+            assignment = false; } 
+Assigned -> FunctionCall
+
+
+FunctionCall -> chalao ID(Argument 
+                { printTAC("call ", ID.lex, " ", to_string(noOfParams), ", ");
+                string temp = Temp();
+                printTAC(temp, "\n", IDname, " = ", temp, "\n"); 
+                noOfParams=0; 
+                IDname = ""; }
+                )
+
+
+Argument -> ZZ K
+Argument -> ^
+
+K -> | ZZ K
+K -> ^
+
+
+ZZ -> ID  
+     { noOfParams++; 
+     printTAC("param ", ID.lex, "\n"); }
+ZZ -> NUM 
+     { noOfParams++; 
+     printTAC("param ", NUM.lex, "\n"); }
+
+
+CommentSection -> ;Comment CommentSection
+CommentSection -> ^
+
+
+Comment -> CMT
+Comment -> ^
+
+
+If -> { ifCondition = true; }
+      agar (
+      { if_t = addressLine; }
+      Expression 
+      { if_P1 = Z1;
+      string dum4 = _lexer.peek(1).lex; }
+      RO
+      Expression
+      { if_P2 = Z1;
+      int ln1 = addressLine;
+      printTAC("if ", if_P1, dum4, if_P2); }
+      )
+      { printTAC(" goto ", "\n", "goto ");
+      if_f = addressLine;
+      printTAC("\n"); }
+      to phir karo 
+      { BackPatch(ln1, addressLine); }
+      Statements
+      { printTAC("goto ");
+      if_e = addressLine;
+      printTAC("\n");
+      Elseif_i = if_f; }
+      ElseIf bas karo
+      { BackPatch(If_e, addressLine); 
+      ifCondition = false; }
+
+
+ElseIf -> { ifCondition = true; }
+          warna agar 
+          { BackPatch(ElseIf_i, addressLine); }
+          (
+          { int Elseif_t = addressLine; }     
+          Expression
+          { if_P1 = Z1; }
+          RO 
+          { string dum5 = _lexer.peek(1).lex; }
+          Expression
+          { if_P2 = Z1;
+          printTAC("if ", if_P1, dum5, if_P2); }
+          )
+          { printTAC(" goto ");
+          intln3 = addressLine;
+          printTAC("\n", " goto "); 
+          int Elseif_f = addressLine;
+          printTAC("\n"); }
+          to phir 
+          { BackPatch(ln3, addressLine); }
+          Statements 
+          { Else_i = ElseIf_f; 
+          printTAC("goto ");
+          int ElseIf_e = addressLine;
+          printTAC("\n"); }
+          Else 
+          { BackPatch(ElseIf_e, addressLine);
+          ifCondition = false; }
+ElseIf -> Else 
+          { BackPatch(ElseIf.i, addressLine); }
+          
+
+Else -> warna phir
+        { BackPatch(Else.i, addressLine); }
+        Statements 
+Else -> ^
+        { BackPatch(Else.i, addressLine); }
+
+
+Return -> wapas bhaijo NUM  
+          { printTAC("ret ", NUM.lex, "\n"); }
+
+
+Output -> dekhao  
+          { printTAC("out "); }
+          << J H
+
+
+Input -> lo Inp
+
+
+Inp -> >> ID  
+       { printTAC("in ", ID.lex, "\n"); }
+Inp -> << STR  
+       { printTAC("out ", STR.lex, "\n"); }
+       >> ID  
+       { printTAC("in ", ID.lex, "\n"); }
+
+
+Loop -> { ifCondition = true; }
+        jab tak (
+        { Loop_t = addressLine; }
+        Expression
+        { if_P1 = Z1; }
+        RO
+        { string dum3 = _lexer.peek(1).lex; }
+        Expression
+        { if_P2 = Z1; 
+        int ln = addressLine; 
+        printTAC("if ", if_P1, dum3, if_P2); }
+        )
+        { printTAC(" goto ", "\n"); }
+        karo Statements
+        { printTAC("goto ");
+        string dum = to_string(Loop_t);
+        printTAC(dum, "\n",);
+        BackPatch(ln, addressLine); }
+        bas karo
+        { ifCondition = false; }
+
+
+Expression -> ER
+              { if(Z1[0] != 't' && assignment == false && ifCondition == false)
+                    printTAC(Z1); }
+
+
+R -> + 
+     { constOnRHS = false;
+     string dum1 = E1; }
+     E
+     { E2 = E1; 
+     E1 = dum1; 
+     temp= Temp();
+     string s = temp + " = " + E1 + " + " + E2;
+     printTAC(s);
+     E1 = temp;
+     printTAC("\n"); }
+     R
+R -> -
+     { constOnRHS = false;
+     string dum1 = E1; }
+     E
+     { E2 = E1; 
+     E1 = dum1; 
+     temp= Temp();
+     string s = temp + " = " + E1 + " - " + E2;
+     printTAC(s);
+     E1 = temp;
+     printTAC("\n"); }
+     R
+R -> ^ 
+     { Z1 = E1; }
+
+
+E -> Z { Z.val = 1 }
+     X
+
+
+X -> *Z 
+     {constOnRHS = false;
+     Z.val = 0;
+     temp = Temp();
+     string s = temp + " = " + Z1 + " * " + Z2;
+     printTAC(s);
+     Z1 = temp;
+     printTAC("\n"); }
+     X
+X -> /Z
+     {constOnRHS = false;
+     Z.val = 0;
+     temp = Temp();
+     string s = temp + " = " + Z1 + " / " + Z2;
+     printTAC(s);
+     Z1 = temp;
+     printTAC("\n"); }
+     X
+X -> %Z
+     {constOnRHS = false;
+     Z.val = 0;
+     temp = Temp();
+     string s = temp + " = " + Z1 + " % " + Z2;
+     printTAC(s);
+     Z1 = temp;
+     printTAC("\n"); }
+     X
+X -> ^
+
+
+Z -> ID { if(val == 1)
+              Z1 = ID.lex[1];
+          else
+              Z2 = ID.lex[1]; } 
+Z -> NUM { initialValue = stoi(NUM.lex);
+           if(val == 1)
+                Z1 = NUM.lex;
+           else
+                Z2 = NUM.lex; }
+
+
+J -> STR  
+     { printTAC(STR.lex, "\n"); } 
+J -> ID  
+     { printTAC(ID.lex, "\n"); } 
+
+
+H -> <<  
+     { printTAC("out "); }
+     J H | ^
+
+
+Funcname -> ID
+Funcname -> markazi

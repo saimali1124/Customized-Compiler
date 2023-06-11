@@ -1,0 +1,37 @@
+GRAMMAR:
+
+
+Start -> CommentSection Starting
+Starting -> kaam Function kaam khatam Start | END_OF_FILE
+Function -> Funcname@Datatype (Parameters) karo Statements
+Datatype -> adad | khali
+Parameters -> ID@adad Param | ^
+Param -> | ID@adad Param | ^
+Statements -> Statement Statements | ^
+Statement ->  Declare;Comment | If CommentSection | Input;Comment  | Output;Comment | Return;Comment | Loop CommentSection  
+Declare -> rakho ID DeclareType
+DeclareType -> @adad AssignToExpression | := Assigned
+AssignToExpression -> := Assigned | ^
+Assigned -> Expression | FunctionCall 
+FunctionCall -> chalao ID(Argument)
+Argument -> ZZ K | ^ 
+K -> | ZZ K | ^
+ZZ -> ID | NUM
+CommentSection -> ;Comment CommentSection | ^
+Comment -> CMT | ^ 
+If -> agar (Expression RO Expression) to phir karo Statements ElseIf bas karo
+ElseIf -> warna agar (Expression RO Expression) to phir Statements Else | Else
+Else -> warna phir Statements | ^
+Return -> wapas bhaijo NUM
+Output -> dekhao << J H
+Input -> lo Inp
+Inp -> >> ID | << STR >> ID
+Loop -> jab tak (Expression RO Expression) karo Statements bas karo
+Expression -> ER
+R ->  +ER | -ER | ^
+E -> ZX
+X -> *ZX | /ZX | %ZX | ^
+Z -> ID | NUM
+J -> STR | ID
+H -> << J H | ^
+Funcname -> ID | markazi

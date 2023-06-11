@@ -1,0 +1,14 @@
+*ID - Type - Datatype - Initial Value - Address - Context*
+
+"markazi" - func - void - 0 - 2 - global
+"num" - var - adad - 0 - 0 - "markazi"
+"n" - var - adad - 0 - 4 - "markazi"
+"x" - var - adad - 0 - 8 - "markazi"
+"y" - var - adad - 0 - 12 - "markazi"
+"result" - var - adad - 0 - 16 - "markazi"
+"r" - var - adad - 7 - 20 - "markazi"
+t1 - var - adad - 0 - 24 - "markazi"
+"i" - var - adad - 1 - 28 - "markazi"
+t2 - var - adad - 0 - 32 - "markazi"
+t3 - var - adad - 0 - 36 - "markazi"
+"z" - var - adad - 0 - 40 - "markazi"

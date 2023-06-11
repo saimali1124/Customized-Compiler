@@ -1,0 +1,16 @@
+underscore -->  [_]
+integer -->  [0-9]
+letter -->  [a-zA-Z]
+backtick -->  [`]
+semicolon -->  [;]
+characters -->  [a-zA-Z0-9|:;@`()<>+-*/%=_ ]
+
+identifier -->  (letter | underscore)(letter | integer | underscore)*
+digits -->  integer+
+comment -->  semicolon(characters)+
+string -->  backtick(characters)* backtick
+RO -->  = | <> | < | <= | > | >=
+IO -->  << | >>
+
+
+Note: The + symbol in comment and digits indicates raised to power plus indicating atleast 1 character should be present
